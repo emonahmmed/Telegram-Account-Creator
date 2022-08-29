@@ -192,7 +192,7 @@ try:
     from telethon.errors import rpcerrorlist, SessionPasswordNeededError, PhoneNumberUnoccupiedError
     from configparser import ConfigParser, NoSectionError, NoOptionError
 except Exception as e:
-    input(f"İçe aktarma hatası: {e}")
+    input(f"Import error: {e}")
 
 
 # CONFIG
@@ -213,12 +213,12 @@ try:
     # CONFIG
 except NoSectionError as e:
     input(
-        f'Hata!!, config dosyasında \
-            {str(e).strip("No section: ")} bölümü bulunamadı')
+        f'Error!!, in config file \
+            {str(e).strip("No section: ")} section not found')
 except NoOptionError as e:
     input(
-        f'Hata!!, config dosyasında \
-             {str(e).strip("No section: ")} bölümü bulunamadı')
+        f'Error!!, in config file \
+             {str(e).strip("No section: ")} section not found')
 
 
 
@@ -264,7 +264,7 @@ class AccountMaker:
             phone = response[2]
             id = response[1]
             print(self.color.OKCYAN +
-                  f"Numara: {phone}   |   Numara Kimliği: {id}\n" + self.color.ENDC)
+                  f"Number: {phone} | Number ID: {id}\n" + self.color.ENDC)
             try:
                 client = TelegramClient(
                     f"sessions/{phone}", self.api_id, self.api_hash)
@@ -321,7 +321,7 @@ class AccountMaker:
                     return main()
                 except SessionPasswordNeededError:
                     print(
-                        self.color.FAIL+"\nBu hesap daha önce başka biri tarafından alınmış ve şifre eklenmiş, üzgünüm paran geri gelmeyecek :(\n" + self.color.ENDC)
+                        self.color.FAIL+"\nThis account was taken by someone else and the password was added, sorry you won't get your money back :(\n" + self.color.ENDC)
                     self.wait()
                     return self.create_account()
                 except PhoneNumberUnoccupiedError:
@@ -348,13 +348,13 @@ class AccountMaker:
                   ('status', '-1'), ('id', id))
         if ban:
             print(self.color.FAIL +
-                  '\n[*] Numara telegram tarafından engellenmiş, Numara iptal ediliyor..'+self.color.ENDC)
+                  '\n[*] Number blocked by telegram, canceling number..'+self.color.ENDC)
         elif flood:
             print(self.color.FAIL +
-                  '\n[*] Numarada bekleme süresi var, Numara iptal ediliyor..'+self.color.ENDC)
+                  '\n[*] Number has a waiting time, Number is canceling..'+self.color.ENDC)
         else:
             print(self.color.FAIL +
-                  "\n[*] Belirlenen sürede kod alınamadı, Numara iptal ediliyor.."+self.color.ENDC)
+                  "\n[*] Failed to get code within specified time, Canceling number.."+self.color.ENDC)
         if get(self.url, params=params).text == "ACCESS_CANCEL":
             self.wait()
         try:
@@ -377,7 +377,7 @@ class AccountMaker:
 
     def wait(self):
         print(self.color.WARNING +
-              "\n Yeni hesap için 10 saniye bekleniyor..."+self.color.ENDC)
+              "\nWaiting for 10 seconds for new account..."+self.color.ENDC)
         sleep(10)
 
 
@@ -387,23 +387,23 @@ def login_accounts():
     phone_data = data["phone_numbers"]
     for id, number in enumerate(phone_data):
         print(f"[{id}] {number}")
-    id = input("Lütfen giriş yapmak istediğiniz hesabın numarasını yazınız :> ")
+    id = input("Please enter the number of the account you want to login:> ")
     if not id:
-        print("Seçim yapmadınız menüye yönlendiriliyorsunuz!!")
+        print("You have not made a selection, you are being redirected to the menu!")
         return menu()
     selected_number = phone_data[int(id)]
-    print(f"Seçtiğiniz numara: [{selected_number}]\n")
-    print(f"Giriş deneniyor lütfen bekleyin..")
+    print(f"The number you selected: [{selected_number}]\n")
+    print(f"Attempting to login, please wait.")
     client = TelegramClient("sessions/"+selected_number, c_api_id, c_ap_hash)
     client.connect()
     if client.is_user_authorized():
-        input("Hesap hazırlandı lütfen giriş yapmak için kod isteyin ve enter tuşuna basın (sadece kod isteğinde bulunduğunuzda)")
-        print("Kod bekleniyor...")
+        input("Account created please request code to login and press enter (only when requesting code)")
+        print("Waiting for code...")
         while True:
             try:
                 message = client.get_messages(777000, limit=1)
                 code = message[0].message.split(":")[1].split(".")[0]
-                print("Kod alındı!!!!")
+                print("Code received!!!!")
                 print(f"Kod:{code}")
                 client.disconnect()
                 break
@@ -437,23 +437,23 @@ def check_ban():
     d['phone_numbers'] = list
     with open("data/phones.json", "w") as l:
         dump(d, l)
-    input(bcolors.OKCYAN+"\nNumara Listesi güncellendi, banlanan numaralar ve session dosyaları silindi\n"+bcolors.ENDC)
+    input(bcolors.OKCYAN+"\nNumber List updated, banned numbers and session files deleted\n"+bcolors.ENDC)
     return main()
 
 
 def banner():
     print(bcolors.WARNING+"""
-[+]               Telegram Araçları 
-[+]              Yapımcı Emrecan Ayas 
+[+] Telegram Tools
+[+] Producer Emrecan Ayas
 """+bcolors.ENDC)
 
 
 def menu():
     print(bcolors.OKCYAN+"""\n
-*************************** MENÜ ******************************
+*************************** MENU ********************** ********
 *                                                             *
-* [1] Hesap Oluşturucu              [2] Ban Kontrolü          *
-* [Q|q] Çıkış                       [3] Hesaplara giriş yap   *
+* [1] Account Builder [2] Ban Check *
+* [Q|q] Log out [3] Log in accounts *
 *                                                             *
 ***************************************************************
 """+bcolors.ENDC)
@@ -476,7 +476,7 @@ def main():
         elif str(op).lower() == "q":
             exit()
         else:
-            input("Hatalı işlem")
+            input("Incorrect operation")
             return main()
     except KeyboardInterrupt:
         print("\nÇıkılıyor...")
